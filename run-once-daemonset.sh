@@ -4,19 +4,19 @@
 set -euo pipefail
 
 function main() {
-  kubectl apply -f cni-plugin-builder.yaml
+  kubectl apply -f cni-plugin-builder-daemonset.yaml
   wait_for_pods cni-plugin-builder
   wait_for_build cni-plugin-builder
-  kubectl delete -f cni-plugin-builder.yaml
+  kubectl delete -f cni-plugin-builder-daemonset.yaml
 }
 
 function wait_for_pods() {
   echo -n "waiting for $1 pods to run"
 
-  PODS=$(kubectl get pods | grep $1 | awk '{print $1}')
+  PODS=$(kubectl get pods --namespace kube-system | grep $1 | awk '{print $1}')
 
   for POD in ${PODS}; do
-    while [[ $(kubectl get pod ${POD} -o go-template --template "{{.status.phase}}") != "Running" ]]; do
+    while [[ $(kubectl get --namespace kube-system pod ${POD} -o go-template --template "{{.status.phase}}") != "Running" ]]; do
       sleep 1
       echo -n "."
     done
@@ -28,10 +28,10 @@ function wait_for_pods() {
 function wait_for_build() {
   echo -n "waiting for $1 daemonset to complete"
 
-  PODS=$(kubectl get pods | grep $1 | awk '{print $1}')
+  PODS=$(kubectl get pods --namespace kube-system | grep $1 | awk '{print $1}')
 
   for POD in ${PODS}; do
-    while [[ $(kubectl logs ${POD} --tail 1) != "daemondone" ]]; do
+    while [[ $(kubectl logs --namespace kube-system ${POD} --tail 1) != "daemondone" ]]; do
       sleep 1
       echo -n "."
     done
