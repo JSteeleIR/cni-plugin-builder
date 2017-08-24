@@ -1,9 +1,9 @@
 FROM golang
 
-RUN git clone https://github.com/containernetworking/plugins.git
+COPY build-cni.sh .
+RUN chmod u+x build-cni.sh
 
-WORKDIR plugins
-RUN ./build.sh
-
-RUN mkdir -p /opt/cni/bin && cp bin/* /opt/cni/bin
+RUN mkdir -p /opt/cni/bin
 VOLUME /opt/cni/bin
+
+CMD ["./build-cni.sh"]

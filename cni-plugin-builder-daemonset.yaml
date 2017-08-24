@@ -13,13 +13,14 @@ spec:
     metadata:
       labels:
         k8s-app: cni-plugin-builder
+        run-once-daemonset: cni-plugin-builder
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: |
           [
             {
               "key": "dedicated",
-              "value": "master", 
+              "value": "master",
               "effect": "NoSchedule"
             },
             {
@@ -33,6 +34,7 @@ spec:
       containers:
         - name: cni-plugin-builder
           image: jsteeleir/cni-plugin-builder
+          imagePullPolicy: Always
           volumeMounts:
             - mountPath: /opt/cni/bin
               name: cni-bin-dir
