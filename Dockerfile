@@ -1,4 +1,4 @@
-from golang
+FROM golang
 
 RUN git clone https://github.com/containernetworking/plugins.git
 
